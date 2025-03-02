@@ -24,25 +24,29 @@ def currency_converter():
     target_curr = 'INR'
     amount = 10
     
-    api_key = os.getenv('CURRENCY_CONVERTER_KEY') 
-    
-    api_url = 'https://v6.exchangerate-api.com/v6/{}/latest/'.format(api_key)
+    variable_data = jsonify(source_curr, target_curr, amount)
 
+    print (variable_data)
+
+    api_key = os.getenv('CURRENCY_CONVERTER_KEY') 
+   
+    #make the api return an error response
+    # api_key = api_key + 'fwse'
+
+    api_url = 'https://v6.exchangerate-api.com/v6/{}/latest/'.format(api_key)
 
     response = requests.get(f"{api_url}{source_curr}")
 
-    #check for 400 status, look up jsonify response. 
-
-    data = response.json()
-
-    rates = data['conversion_rates']
-
-    converted_amount = amount * rates[target_curr]
-
-
-
-    return str(converted_amount)
-
+    #check for status
+    if response.status_code != 200:
+        return response.text
+    
+    else:
+        data = response.json()
+        rates = data['conversion_rates']
+        converted_amount = amount * rates[target_curr]
+        
+        return str(converted_amount)
 
 if __name__ == '__main__':
     app.run(debug=True)
