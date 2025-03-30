@@ -3,6 +3,7 @@ import requests
 import sqlite3
 import os
 from dotenv import load_dotenv 
+from database import insert_product 
 
 load_dotenv()
 
@@ -21,13 +22,9 @@ def currency_converter():
     #make sure that variables are not empty
 
     source_curr = "USD"
-    target_curr = "INR"
+    target_curr = "IN"
     amount = 0.0
 
-    fallback_name: dict[str, str,float] = {
-    "first_name": "UserFirstName",
-    "last_name": "UserLastName"
-}
     variables_dict: dict[str, str,float] = {
         "source_curr": source_curr,
         "target_curr": target_curr,
@@ -80,6 +77,37 @@ def currency_converter():
         converted_amount = amount * rates[target_curr]
         
         return str(converted_amount)
+
+@app.route('/add_inventory') #let's user add a product to the inventory
+def add_inventory():
+
+    # #Product name, Description, Category, Price, Image, Seller_id)")
+    product_name = request.args.get('product_name')
+    description = request.args.get('description')
+    category = request.args.get('category')
+    price = request.args.get('price')
+    image = 'image'
+    # #image = request.args.get('image')
+    # # with open('/Users/rodeledjan/Documents/GitHub/Shopping-Application/images/Screenshot 2025-03-23 at 3.46.03 PM.png',"rb") as f:
+    # #     image = f.read()    
+    seller_id = request.args.get('seller_id')
+    
+    #/add_inventory?product_name=product1&description=soap&category=bath&price=2&seller_id=1
+    print(f"INSERT INTO product_info VALUES('{product_name}', '{description}','{category}','{price}','{image}','{seller_id}')")
+
+    # print(f"{product_name},{description},{category},{price},{image},{seller_id})")
+
+    result = f"{product_name},{description},{category},{price},{image},{seller_id})"
+
+    try:
+        insert_product(product_name,description,category,price, image,seller_id)
+                 
+        return 'insert successful'
+    
+    except Exception as e:
+        return str(e)
+
+    # verify success
 
 if __name__ == '__main__':
     app.run(debug=True)
