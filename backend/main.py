@@ -3,15 +3,19 @@ import requests
 import sqlite3
 import os
 from dotenv import load_dotenv 
-from database import insert_product 
-
+# from database import insert_product 
+# from database import view_inventory
+# from database import view_inventory_schema
+from database import *
 load_dotenv()
 
 app = Flask(__name__)
 
 @app.route('/') #home url/just like Index.html
 def homeroute():
-    return 'Hello World'
+    # initialize_db()
+    #return 'Hello World'
+    return 'Hello World.  ' + initialize_db()
 
 @app.route('/currency_converter') #home url/just like Index.html
 def currency_converter():
@@ -86,21 +90,30 @@ def add_inventory():
     description = request.args.get('description')
     category = request.args.get('category')
     price = request.args.get('price')
-    image = 'image'
+    
+    # image = 'image'
+    
+    with open('images/pantene.png', 'rb') as file:
+        img_data = file.read()
+
+    
     # #image = request.args.get('image')
     # # with open('/Users/rodeledjan/Documents/GitHub/Shopping-Application/images/Screenshot 2025-03-23 at 3.46.03 PM.png',"rb") as f:
     # #     image = f.read()    
     seller_id = request.args.get('seller_id')
     
-    #/add_inventory?product_name=product1&description=soap&category=bath&price=2&seller_id=1
-    print(f"INSERT INTO product_info VALUES('{product_name}', '{description}','{category}','{price}','{image}','{seller_id}')")
+    #/add_inventory?product_name=Crest&description=toothpaste&category=bath&price=4&seller_id=1
+    #add_inventory?product_name=Safeguard&description=soap&category=bath&price=4&seller_id=1
+
+
+    print(f"INSERT INTO product_info(product_name,description,category,price,image,seller_id)  VALUES('{product_name}','{description}','{category}','{price}',{img_data},'{seller_id}')")
 
     # print(f"{product_name},{description},{category},{price},{image},{seller_id})")
 
-    result = f"{product_name},{description},{category},{price},{image},{seller_id})"
+    result = f"{product_name},{description},{category},{price},{img_data},{seller_id})"
 
     try:
-        insert_product(product_name,description,category,price, image,seller_id)
+        insert_product(product_name,description,category,price, img_data,seller_id)
                  
         return 'insert successful'
     
@@ -108,6 +121,28 @@ def add_inventory():
         return str(e)
 
     # verify success
+
+@app.route('/inventory') #view products in the database
+def viewinventory():
+
+   return view_inventory()
+
+@app.route('/view_schema') 
+def view_schema():
+
+    return view_inventory_schema()
+
+@app.route('/table/schema') #view products in the database
+def table_schema():
+    table = request.args.get("table")
+
+    return get_table_schema(table)
+
+
+@app.route('/table/create') #view products in the database
+def table_create():
+  
+    return initialize_db();
 
 if __name__ == '__main__':
     app.run(debug=True)
