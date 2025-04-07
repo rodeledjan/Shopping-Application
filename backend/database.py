@@ -1,4 +1,8 @@
+import base64
+import io
 import sqlite3
+
+# from PIL import Image 
 
 # cur.execute(f"SELECT * FROM product_info")
 # con.commit()
@@ -71,8 +75,15 @@ def insert_product( product_name, description, category, price, image, seller_id
 
     con_insert = sqlite3.connect("Inventory.db", check_same_thread=False)
     cur_insert = con_insert.cursor()
-    
-    cur_insert.execute(f"INSERT INTO product_info VALUES('{product_name}','{description}','{category}','{price}','{image}','{seller_id}')")
+
+
+    description='test2'
+
+
+    print(description)
+
+    # cur_insert.execute("INSERT INTO product_info(product_name,description,category,price,image,seller_id) VALUES(?,?,?,?,?,?)",(product_name,description,category,price,image,seller_id))
+
     con_insert.commit()
 
     cur_insert.close()
@@ -88,18 +99,21 @@ def view_inventory():
     result = cur2.fetchall()
     resultString = ''
 
-    for item in result:
-        for i in item:
-
-            # resultString += f"""{item}<br>"""
-            resultString += f"""{i}<br>"""
-            
-        # resultString = str(item)
-
     cur2.close()
     con2.close()    
 
-    return str(resultString) 
+    for row in result:
+        for field in row:
+            if isinstance(field, bytes):
+                base64_bytes= base64.b64encode(field)
+                base64_string= base64_bytes.decode('utf-8')
+                field = '<img src="data:image/png;base64,'+ str(base64_string) +'" alt="Red dot" width="50" height="50"/>'
+
+            resultString += f"""{field}"""
+        resultString += '</br>'        
+            
+    resultString = '<div>'+ resultString +'</div>'
+    return resultString 
 
 def view_inventory_schema():
     

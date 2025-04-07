@@ -3,6 +3,7 @@ import requests
 import sqlite3
 import os
 from dotenv import load_dotenv 
+
 # from database import insert_product 
 # from database import view_inventory
 # from database import view_inventory_schema
@@ -93,7 +94,7 @@ def add_inventory():
     
     # image = 'image'
     
-    with open('images/pantene.png', 'rb') as file:
+    with open(r'images/pantene.png', 'rb') as file:
         img_data = file.read()
 
     
@@ -105,11 +106,6 @@ def add_inventory():
     #/add_inventory?product_name=Crest&description=toothpaste&category=bath&price=4&seller_id=1
     #add_inventory?product_name=Safeguard&description=soap&category=bath&price=4&seller_id=1
 
-
-    print(f"INSERT INTO product_info(product_name,description,category,price,image,seller_id)  VALUES('{product_name}','{description}','{category}','{price}',{img_data},'{seller_id}')")
-
-    # print(f"{product_name},{description},{category},{price},{image},{seller_id})")
-
     result = f"{product_name},{description},{category},{price},{img_data},{seller_id})"
 
     try:
@@ -120,12 +116,12 @@ def add_inventory():
     except Exception as e:
         return str(e)
 
-    # verify success
 
 @app.route('/inventory') #view products in the database
 def viewinventory():
-
+   
    return view_inventory()
+
 
 @app.route('/view_schema') 
 def view_schema():
