@@ -2,103 +2,36 @@ import base64
 import io
 import sqlite3
 
-# from PIL import Image 
+from database import *   
+from init_db import * 
 
-# cur.execute(f"SELECT * FROM product_info")
-# con.commit()
-
-# product_info =cur.fetchall()
-# print(str(product_info))    
-
-# resultString = ''
-
-# for item in result:
-#     resultString += f"""Movie:{item[0]}<br>
-#     Year: {item[1]}
-#     <br>Score:{item[2]}<br><br>"""
+database='database.db'
 
 #do a idempotent create with describe/pragam....
-
 def initialize_db():
-    con = sqlite3.connect("Inventory.db", check_same_thread=False)
-    cur = con.cursor()
-    
-    # cur.execute("DROP TABLE product_info")
-    # con.commit()
 
-    cur.execute('''CREATE TABLE IF NOT EXISTS product_info (
-    id INTEGER PRIMARY KEY AUTOINCREMENT
-    , product_name TEXT NOT NULL
-    , description TEXT NOT NULL 
-    , category TEXT NOT NULL
-    , price REAL
-    , image BLOB NOT NULL 
-    , seller_id INTEGER)''')
-    
-    con.commit()
-
-
-    data = [
-        {
-            "table":"product_info"
-            , "columns":"product_name, description, category, price, image, seller_id"
-        },
-        # {
-        #     "table":"Test_Table"
-        #     , "columns":"product_name, description, category, price, image, seller_id"
-        # },
-        ]
-    
-    
-    # add_columns=''
-
-    # for item in data:
-    #     #creates an idempotent table
-    #     result = does_table_exists(str(item["table"]))
-    #     if result != True:
-    #         cur.execute(
-    #             f"CREATE TABLE {item["table"]}" +
-    #              '(' + (item["columns"]) + ')' )
-
-    #     create_table = ''
-    #     create_table = f"CREATE TABLE {item["table"]}" 
-    #     add_columns = '(' + (item["columns"]) + ')'
-    #     create_table = create_table + add_columns
-
-    con.commit()
-    cur.close()
-    con.close()    
+    initialize_db()
 
     return 'Database has been initialized.'
 
-def insert_product( product_name, description, category, price, image, seller_id):
+def insert_product( product_name, description, category, price, image):
 
-    con_insert = sqlite3.connect("Inventory.db", check_same_thread=False)
+    con_insert = sqlite3.connect(database)
     cur_insert = con_insert.cursor()
-
-
-    description='test2'
-
-
-    print(description)
-
-    # cur_insert.execute("INSERT INTO product_info(product_name,description,category,price,image,seller_id) VALUES(?,?,?,?,?,?)",(product_name,description,category,price,image,seller_id))
-
+    cur_insert.execute("INSERT INTO product_info(product_name,description,category,price,image) VALUES(?,?,?,?,?)",(product_name,description,category,price,image))
     con_insert.commit()
-
     cur_insert.close()
     con_insert.close()    
 
 def view_inventory():
 
-    con2 = sqlite3.connect("Inventory.db", check_same_thread=False)
+    # con2 = sqlite3.connect(database)
+    con2 = sqlite3.connect(database)
     cur2 = con2.cursor()
-
     cur2.execute("SELECT * FROM product_info")
     con2.commit()
     result = cur2.fetchall()
     resultString = ''
-
     cur2.close()
     con2.close()    
 
@@ -117,7 +50,7 @@ def view_inventory():
 
 def view_inventory_schema():
     
-    con2 = sqlite3.connect("Inventory.db")
+    con2 = sqlite3.connect(database)
     cur2 = con2.cursor()
 
     cur2.execute("SELECT * FROM sqlite_master")
@@ -132,7 +65,7 @@ def view_inventory_schema():
 
 def does_table_exists(table):
     
-    table_exists_con = sqlite3.connect("Inventory.db")
+    table_exists_con = sqlite3.connect(database)
     table_existscur = table_exists_con.cursor()
 
     table_existscur.execute(f"SELECT * FROM sqlite_master WHERE NAME = '{table}'")
@@ -146,7 +79,7 @@ def does_table_exists(table):
 
 def get_table_schema(table):
     
-    table_exists_con = sqlite3.connect("Inventory.db")
+    table_exists_con = sqlite3.connect(database)
     table_existscur = table_exists_con.cursor()
 
     table_existscur.execute(f"SELECT * FROM sqlite_master WHERE NAME = '{table}'")
