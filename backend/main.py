@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import requests
 import sqlite3
 import os
@@ -7,16 +7,18 @@ from dotenv import load_dotenv
 # from database import insert_product 
 # from database import view_inventory
 # from database import view_inventory_schema
-from database import *
+from database import *          
 load_dotenv()
 
 app = Flask(__name__)
 
 @app.route('/') #home url/just like Index.html
-def homeroute():
+def index():
     # initialize_db()
     #return 'Hello World'
-    return 'Hello World.  ' + initialize_db()
+    # return 'Hello World.  ' + initialize_db()
+    return render_template('index.html')
+
 
 @app.route('/currency_converter') #home url/just like Index.html
 def currency_converter():
@@ -91,25 +93,27 @@ def add_inventory():
     description = request.args.get('description')
     category = request.args.get('category')
     price = request.args.get('price')
+    image = request.args.get('image')
     
-    # image = 'image'
-    
-    with open(r'images/pantene.png', 'rb') as file:
+    # with open(r'images/pantene.png', 'rb') as file:
+    with open(r''+image+'', 'rb') as file:    
         img_data = file.read()
-
     
     # #image = request.args.get('image')
-    # # with open('/Users/rodeledjan/Documents/GitHub/Shopping-Application/images/Screenshot 2025-03-23 at 3.46.03 PM.png',"rb") as f:
+    # # with open('/Users/rodeledjan/Documents/GitHub/Shopping-Application/images/pantene.png',"rb") as f:
     # #     image = f.read()    
-    seller_id = request.args.get('seller_id')
+    # seller_id = request.args.get('seller_id')
     
-    #/add_inventory?product_name=Crest&description=toothpaste&category=bath&price=4&seller_id=1
-    #add_inventory?product_name=Safeguard&description=soap&category=bath&price=4&seller_id=1
-
-    result = f"{product_name},{description},{category},{price},{img_data},{seller_id})"
-
+    #/add_inventory?product_name=Crest&description=toothpaste&category=oral care&image=images/crest_3D_white.png&price=4&seller_id=1
+    #/add_inventory?product_name=Crest&description=toothpaste&category=oral care&image=images/crest_3D_white.png&price=4.25
+    #/add_inventory?product_name=Pantene&description=shampoo&category=bath&image=images/pantene.png&price=5.5
+    #/add_inventory?product_name=Safeguard&description=soap&category=bath&image=images/safeguard.png&price=2.75
+   
+    # result = f"{product_name},{description},{category},{price},{img_data},{seller_id})"
+    result = f"{product_name},{description},{category},{price},{img_data})"
     try:
-        insert_product(product_name,description,category,price, img_data,seller_id)
+        # insert_product(product_name,description,category,price, img_data,seller_id)
+        insert_product(product_name,description,category,price, img_data)
                  
         return 'insert successful'
     
